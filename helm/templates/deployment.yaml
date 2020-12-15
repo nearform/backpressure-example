@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backpressure-example-deployment
+  labels:
+    app: backpressure-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backpressure-example
+  template:
+    metadata:
+      labels:
+        app: backpressure-example
+        date: '{{ now | unixEpoch }}'
+      annotations:
+        prometheus.io/scrape: 'true'
+    spec:
+      containers:
+        - name: backpressure-example
+          imagePullPolicy: Never
+          image: backpressure-example
+          ports:
+            - containerPort: 3000
+              name: web
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: web
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: web
+            initialDelaySeconds: 3
+            periodSeconds: 3

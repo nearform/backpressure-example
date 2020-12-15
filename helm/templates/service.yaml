@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backpressure-example
+  labels:
+    app: backpressure-example
+spec:
+  type: NodePort
+  selector:
+    app: backpressure-example
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000

@@ -1,0 +1,19 @@
+prometheus-adapter:
+  dnsPolicy: ClusterFirstWithHostNet
+  logLevel: 10
+  prometheus:
+    url: 'http://backpressure-example-prometheus-server'
+    port: 80
+  rules:
+    default: false
+    custom:
+      - seriesQuery: 'http_request_duration_seconds'
+        resources:
+          overrides:
+            kubernetes_pod_name: { resource: 'pod' }
+            kubernetes_namespace: { resource: 'namespace' }
+        metricsQuery: sum(http_request_duration_seconds{quantile="0.999", kubernetes_pod_name =~"backpressure-example-deployment.*"}) by (kubernetes_pod_name)
+metrics-server:
+  args:
+    - --kubelet-insecure-tls
+    - --kubelet-preferred-address-types=InternalIP
